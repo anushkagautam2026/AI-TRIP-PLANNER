@@ -8,7 +8,6 @@ function CreateTrip() {
     <div>
       <div className='mt-20'>
       <h2 className='text-xl font-medium my-3'>What is your destination?</h2>
-      
       </div>
     </div>
   </div>
