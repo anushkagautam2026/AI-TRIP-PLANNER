@@ -1,4 +1,5 @@
 import React from 'react'
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
 function CreateTrip() {
   return (
   <div className='sm:px-10 md:px-32 lg:px-56 xl:px-72 px-5 mt-10'>
@@ -8,6 +9,8 @@ function CreateTrip() {
     <div>
       <div className='mt-20'>
       <h2 className='text-xl font-medium my-3'>What is your destination?</h2>
+      {console.log(import.meta.env.VITE_GOOGLE_PLACE_API_KEY)}
+      <GooglePlacesAutocomplete apiKey={import.meta.env.VITE_GOOGLE_PLACE_API_KEY}/>
       </div>
     </div>
   </div>
