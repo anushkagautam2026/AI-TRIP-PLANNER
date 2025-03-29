@@ -22,11 +22,13 @@ import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/service/firebaseConfig";
+import { useNavigate } from "react-router-dom";
 function CreateTrip() {
   const [place, setPlace] = useState();
   const [formData, setFormData] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate=useNavigate();
   const login = useGoogleLogin({
     onSuccess: (coderesp) => getUserProfile(coderesp),
     onError: (error) => console.log(error),
@@ -86,6 +88,7 @@ function CreateTrip() {
       id: docId,
     });
     setLoading(false);
+    navigate('/view-trip/'+docId)
   };
   const getUserProfile = async (tokenInfo) => {
     if (!tokenInfo?.access_token?.trim()) {
