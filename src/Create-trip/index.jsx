@@ -5,9 +5,25 @@ import { chatSession } from "@/service/AIModel";
 import React, { useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { toast } from "sonner";
+import {FcGoogle} from "react-icons/fc"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 function CreateTrip() {
   const [place, setPlace] = useState();
-  const [formData,setFormData]=useState([]);
+  const [formData,setFormData]=useState({});
+  const [openDialog,setOpenDialog]=useState(false);
+  const login=useGoogleLogin({
+    onSuccess:(coderesp)=>getUserProfile(coderesp),
+    onError:(error)=>console.log(error)
+  })
   const handleInputChange=(name,value)=>{
     
     setFormData({
@@ -16,16 +32,45 @@ function CreateTrip() {
     })
   }
   const OnGenerateTrip=async ()=>{
-    if(formData?.noOfDays>10&&!formData?.location||!formData?.budget||!formData?.traveller){
-      toast("please fill all details")
-      return;
+    const user = localStorage.getItem('user');
+
+    if (!user || user === "null" || user === "undefined") {
+        setOpenDialog(true);
+        return;
     }
-    const FINAL_PROMPT=AI_PROMPT.replace('{location}',formData?.location.label)
+
+    console.log("User found in localStorage:", JSON.parse(user));
+
+    // console.log("FormData before validation:", formData);
+
+    if (!formData?.location || !formData?.location?.label || !formData?.noOfDays || !formData?.budget || !formData?.traveller) {
+      toast("Please fill all details");
+      return;
+  }
+    const FINAL_PROMPT=AI_PROMPT.replace('{location}',formData?.location?.label)
     .replace('{totalDays}',formData?.noOfDays).replace('{traveller}',formData?.traveller)
     .replace('{budget}',formData?.budget).replace('{location}',formData?.location.label).replace('{totalDays}',formData?.noOfDays)
     console.log(FINAL_PROMPT);
     const result=await chatSession.sendMessage(FINAL_PROMPT);
     console.log(result?.response?.text());
+  }
+  const getUserProfile=async (tokenInfo)=>{
+    
+    if (!tokenInfo?.access_token?.trim()) {
+      console.error("No access token received!");
+      return;
+    }
+    const response = await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo.access_token.trim()}`, {
+      headers: {
+        Authorization: `Bearer ${tokenInfo.access_token.trim()}`,
+        Accept: "application/json"
+      }
+    
+    });
+    localStorage.setItem('user',JSON.stringify(response.data));
+    console.log("Stored user:", localStorage.getItem("user"));
+    setOpenDialog(false);
+    OnGenerateTrip();
   }
   useEffect(()=>{
     console.log(formData);
@@ -100,6 +145,19 @@ function CreateTrip() {
       <div className="my-10 flex justify-end">
       <Button onClick={OnGenerateTrip}>Generate Trip</Button>
       </div>
+      <Dialog open ={openDialog} >
+  <DialogContent>
+    <DialogHeader>
+      <DialogDescription>
+      <DialogTitle><img src='/logo.svg'/></DialogTitle>
+        
+        <h2 className="font-bold mt-7 text-lg">sign in with Google</h2>
+        <p>sign in to the app with google authentication securely</p>
+        <Button className="w-full mt-5" onClick={login}> <FcGoogle/>Sign in with Google</Button>
+      </DialogDescription>
+    </DialogHeader>
+  </DialogContent>
+</Dialog>
       
     </div>
   );
