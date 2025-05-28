@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import InfoSection from '../components/infoSection';
+import InfoSection from '../components/InfoSection';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/service/firebaseConfig';
 import Hotels from '../components/hotels';
