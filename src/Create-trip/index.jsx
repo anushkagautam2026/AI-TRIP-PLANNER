@@ -47,7 +47,7 @@ function CreateTrip() {
       return;
     }
 
-    console.log("User found in localStorage:", JSON.parse(user));
+    
 
     // console.log("FormData before validation:", formData);
 
@@ -71,7 +71,7 @@ function CreateTrip() {
       .replace("{budget}", formData?.budget)
       .replace("{location}", formData?.location.label)
       .replace("{totalDays}", formData?.noOfDays);
-    console.log(FINAL_PROMPT);
+    
     const result = await chatSession.sendMessage(FINAL_PROMPT);
     // console.log(result?.response?.text());
     setLoading(false);
@@ -110,7 +110,7 @@ function CreateTrip() {
     OnGenerateTrip();
   };
   useEffect(() => {
-    console.log(formData);
+    
   }, [formData]);
   return (
     <div className="sm:px-10 md:px-32 lg:px-56 xl:px-72 px-5 mt-10">

@@ -3,6 +3,9 @@ import { useParams } from 'react-router-dom'
 import InfoSection from '../components/infoSection';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/service/firebaseConfig';
+import Hotels from '../components/hotels';
+import PlacesToVisit from '../components/PlacesToVisit';
+import Footer from '../components/Footer';
 
 function ViewTrip() {
   const {tripId}=useParams();
@@ -12,7 +15,7 @@ function ViewTrip() {
     const docRef=doc(db, 'AITrips', tripId);
     const docSnap=await getDoc (docRef);
     if(docSnap.exists()) {
-    console.log("Dodcument:", docSnap.data());
+    
     setTrip(docSnap.data());
     }
     else{
@@ -21,9 +24,11 @@ function ViewTrip() {
     }
   }
   return (
-    <div className=''>
-      <InfoSection trip={trip}/>
-    
+    <div className='p-10 md:px-20 lg:px-44 xl:px-56'>
+      <InfoSection trip={trip} className="h-[340px] w-full object-cover rounded-xl"/>
+      <Hotels trip={trip}/>
+      <PlacesToVisit trip={trip}/>
+      <Footer/>
     </div>
   )
 }
