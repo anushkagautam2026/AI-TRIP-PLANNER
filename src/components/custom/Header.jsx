@@ -99,12 +99,12 @@ function Header() {
         {user ? (
           <div className="flex items-center gap-4">
             <Link to={'/create-trip'}>
-              <Button varient="outline" className="rounded-full">
+              <Button variant="outline" className="rounded-full">
                 Create Trip
               </Button>
             </Link>
             <Link to={'/my-trips'}>
-              <Button varient="outline" className="rounded-full">
+              <Button variant="outline" className="rounded-full">
                 My Trips
               </Button>
             </Link>

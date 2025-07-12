@@ -1,11 +1,11 @@
 import { db } from "@/service/firebaseConfig";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { useNavigation } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import UserTripCardItem from "./components/UserTripCardItem";
 
 function MyTrips() {
-  const navigation = useNavigation();
+  const navigate = useNavigate();
   const [userTrips, setUserTrips] = useState([]);
   useEffect(() => {
     getUserTrips();
@@ -14,7 +14,7 @@ function MyTrips() {
     const user = JSON.parse(localStorage.getItem("user"));
 
     if (!user) {
-      navigation("/");
+      navigate("/");
       return;
     }
 
