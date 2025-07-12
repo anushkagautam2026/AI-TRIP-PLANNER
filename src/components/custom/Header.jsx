@@ -16,6 +16,7 @@ import {
 import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 import { FcGoogle } from "react-icons/fc";
 import axios from "axios";
+import { Link } from "react-router-dom";
 function Header() {
   const user = JSON.parse(localStorage.getItem("user"));
   const [openDialog, setOpenDialog] = useState(false);
@@ -97,16 +98,16 @@ function Header() {
       <div>
         {user ? (
           <div className="flex items-center gap-4">
-            <a href="/create-trip">
+            <Link to={'/create-trip'}>
               <Button varient="outline" className="rounded-full">
                 Create Trip
               </Button>
-            </a>
-            <a href="/my-trips">
+            </Link>
+            <Link to={'/my-trips'}>
               <Button varient="outline" className="rounded-full">
                 My Trips
               </Button>
-            </a>
+            </Link>
             <Popover>
               <PopoverTrigger>
                 <img
