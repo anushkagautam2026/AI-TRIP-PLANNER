@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PlusCircle, Trash2 } from "lucide-react";
 import {
   AI_PROMPT,
   SelectBudgetOptions,
@@ -28,7 +29,8 @@ function CreateTrip() {
   const [formData, setFormData] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigate=useNavigate();
+  const [members, setMembers] = useState([{ name: "" }]);
+  const navigate = useNavigate();
   const login = useGoogleLogin({
     onSuccess: (coderesp) => getUserProfile(coderesp),
     onError: (error) => console.log(error),
@@ -47,20 +49,17 @@ function CreateTrip() {
       return;
     }
 
-    
-
-    // console.log("FormData before validation:", formData);
-
     if (
-      !formData?.location ||
-      !formData?.location?.label ||
-      !formData?.noOfDays ||
-      !formData?.budget ||
-      !formData?.traveller
-    ) {
-      toast("Please fill all details");
-      return;
-    }
+  !formData?.location ||
+  !formData?.location?.label ||
+  !formData?.noOfDays ||
+  !formData?.budget ||
+  !formData?.traveller ||
+  !formData?.origin
+) {
+  toast("Please fill all details");
+  return;
+}
     setLoading(true);
     const FINAL_PROMPT = AI_PROMPT.replace(
       "{location}",
@@ -71,7 +70,7 @@ function CreateTrip() {
       .replace("{budget}", formData?.budget)
       .replace("{location}", formData?.location.label)
       .replace("{totalDays}", formData?.noOfDays);
-    
+
     const result = await chatSession.sendMessage(FINAL_PROMPT);
     // console.log(result?.response?.text());
     setLoading(false);
@@ -88,7 +87,7 @@ function CreateTrip() {
       id: docId,
     });
     setLoading(false);
-    navigate('/view-trip/'+docId)
+    navigate("/view-trip/" + docId);
   };
   const getUserProfile = async (tokenInfo) => {
     if (!tokenInfo?.access_token?.trim()) {
@@ -109,9 +108,23 @@ function CreateTrip() {
     setOpenDialog(false);
     OnGenerateTrip();
   };
-  useEffect(() => {
-    
-  }, [formData]);
+  useEffect(() => {}, [formData]);
+  const handleMemberChange = (index, value) => {
+    const updated = [...members];
+    updated[index].name = value;
+    setMembers(updated);
+    handleInputChange("members", updated);
+  };
+
+  const addMemberField = () => {
+    setMembers([...members, { name: "" }]);
+  };
+  const removeMemberField = (index) => {
+    const updated = [...members];
+    updated.splice(index, 1);
+    setMembers(updated);
+    handleInputChange("members", updated);
+  };
   return (
     <div className="sm:px-10 md:px-32 lg:px-56 xl:px-72 px-5 mt-10">
       <h2 className="font-bold text-3xl">
@@ -122,6 +135,18 @@ function CreateTrip() {
         a customized itinerary based on your preferences.
       </p>
       <div className="mt-20 flex flex-col gap-10">
+        <div className="mt-10">
+          <h2 className="text-xl font-medium my-3">
+            Where are you traveling from?
+          </h2>
+          <GooglePlacesAutocomplete
+            apiKey={import.meta.env.VITE_GOOGLE_PLACE_API_KEY}
+            selectProps={{
+              value: formData.origin || null,
+              onChange: (v) => handleInputChange("origin", v),
+            }}
+          />
+        </div>
         <div>
           <h2 className="text-xl font-medium my-3">
             What is your destination?
@@ -193,9 +218,43 @@ function CreateTrip() {
             ))}
           </div>
         </div>
+        <div>
+          <h2 className="text-xl font-medium my-3">
+            Who's going on this trip?
+          </h2>
+          <p className="text-sm text-gray-500 mb-3">
+            Enter the names of your fellow travellers
+          </p>
+          <div className="flex flex-col gap-3">
+            {members.map((member, index) => (
+              <div key={index} className="flex gap-3 items-center">
+                <Input
+                  placeholder={`Member ${index + 1} name or email`}
+                  value={member.name}
+                  onChange={(e) => handleMemberChange(index, e.target.value)}
+                />
+                {index !== 0 && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeMemberField(index)}
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
+                )}
+              </div>
+            ))}
+            <Button variant="ghost" onClick={addMemberField}>
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Add Member
+            </Button>
+          </div>
+        </div>
       </div>
       <div className="my-10 flex justify-end">
-        <Button disabled={loading} onClick={OnGenerateTrip}>Generate Trip</Button>
+        <Button disabled={loading} onClick={OnGenerateTrip}>
+          Generate Trip
+        </Button>
       </div>
       <Dialog open={openDialog}>
         <DialogContent>
@@ -207,7 +266,11 @@ function CreateTrip() {
 
               <h2 className="font-bold mt-7 text-lg">sign in with Google</h2>
               <p>sign in to the app with google authentication securely</p>
-              <Button disabled={loading}className="w-full mt-5" onClick={login}>
+              <Button
+                disabled={loading}
+                className="w-full mt-5"
+                onClick={login}
+              >
                 {" "}
                 <FcGoogle />
                 Sign in with Google

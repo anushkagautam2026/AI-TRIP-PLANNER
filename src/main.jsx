@@ -9,6 +9,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import ViewTrip from './view-trip/[tripId]';
 import MyTrips from './my-trips';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import TripGallery from './view-trip/components/TripGallery';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -21,6 +22,8 @@ createRoot(document.getElementById('root')).render(
           <Route path="/create-trip" element={<CreateTrip />} />
           <Route path="/view-trip/:tripId" element={<ViewTrip />} />
           <Route path="/my-trips" element={<MyTrips />} />
+          <Route path="/view-trip/:tripId/gallery" element={<TripGallery />} />
+          <Route path="/trip/:tripId/gallery" element={<TripGallery />} />
         </Routes>
       </BrowserRouter>
     </GoogleOAuthProvider>
