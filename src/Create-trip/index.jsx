@@ -81,11 +81,13 @@ function CreateTrip() {
     const docId = Date.now().toString();
     const user = JSON.parse(localStorage.getItem("user"));
     await setDoc(doc(db, "AITrips", docId), {
-      userSelection: formData,
-      tripData: JSON.parse(TripData),
-      userEmail: user.email,
-      id: docId,
-    });
+  userSelection: formData,
+  tripData: JSON.parse(TripData),
+  userEmail: user.email,
+  id: docId,
+  members: members.map((m) => m.name.trim()).filter((name) => name !== ""),
+});
+
     setLoading(false);
     navigate("/view-trip/" + docId);
   };
